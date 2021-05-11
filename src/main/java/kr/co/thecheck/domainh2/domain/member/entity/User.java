@@ -1,5 +1,6 @@
 package kr.co.thecheck.domainh2.domain.member.entity;
 
+import kr.co.thecheck.domainh2.domain.member.constant.RoleType;
 import kr.co.thecheck.domainh2.infra.entity.AuditEntity;
 import lombok.*;
 
@@ -27,4 +28,11 @@ public class User extends AuditEntity {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     private List<UserRole> roles = new ArrayList<>();
 
+    //----------------------//
+    public static User createUser(String username, String password){
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        return user;
+    }
 }
