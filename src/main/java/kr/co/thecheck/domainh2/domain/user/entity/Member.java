@@ -1,4 +1,4 @@
-package kr.co.thecheck.domainh2.domain.member.entity;
+package kr.co.thecheck.domainh2.domain.user.entity;
 
 import kr.co.thecheck.domainh2.domain.member.constant.RoleType;
 import kr.co.thecheck.domainh2.infra.entity.AuditEntity;
@@ -7,26 +7,25 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter(AccessLevel.PROTECTED)
-public class User extends AuditEntity {
+public class Member extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Column(name="member_id")
     private Long id;
 
-    private String username;
+    private String membername;
 
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<UserRole> roles = new ArrayList<>();
+    private List<MemberRole> roles = new ArrayList<>();
 
     //----------------------//
     public static User createUser(String username, String password){
