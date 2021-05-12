@@ -12,3 +12,6 @@ spring:
       hibernate.format_sql: true
     show-sql: false
     open-in-view: false
+
+jwt:
+  secret: 1q2w3e4r!@#$
