@@ -1,4 +1,4 @@
-package kr.co.thecheck.domainh2.domain.member.constant;
+package kr.co.thecheck.domainh2.domain.user.constant;
 
 import kr.co.thecheck.domainh2.infra.constant.EnumType;
 

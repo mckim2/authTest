@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
         AuthCode authCode = authCodeGenerator.generate(reqDto.getUsername());
 
         // 인증 코드 테이블에 저장
-        authLogService.addLog();
+//        authLogService.addLog();
 
         return authCode;
     }

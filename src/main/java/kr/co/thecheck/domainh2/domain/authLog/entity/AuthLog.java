@@ -1,6 +1,5 @@
 package kr.co.thecheck.domainh2.domain.authLog.entity;
 
-import kr.co.thecheck.domainh2.domain.member.entity.User;
 import lombok.*;
 import org.springframework.util.ObjectUtils;
 
