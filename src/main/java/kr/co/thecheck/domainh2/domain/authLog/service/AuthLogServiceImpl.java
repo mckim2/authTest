@@ -6,7 +6,7 @@ import kr.co.thecheck.domainh2.domain.authLog.repository.AuthLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,7 +24,14 @@ public class AuthLogServiceImpl implements AuthLogService{
     }
 
     @Override
-    public void addLog(String userId, String authCode) throws Exception {
+    public void alreadyLoginCheck(String userId, String authCode) throws Exception {
+        AuthLogId authLogId = new AuthLogId(userId, authCode);
+        Optional<AuthLog> authLog = authLogRepository.findById(authLogId);
+
+    }
+
+    @Override
+    public void addLog(String userId, String authCode) throws Exception{
         AuthLog authLog = AuthLog.createLog(userId, authCode);
         // 인증 기록을 등록한다.
         // 등록이 불가능하면 예외를 발생한다.
@@ -32,13 +39,16 @@ public class AuthLogServiceImpl implements AuthLogService{
     }
 
     @Override
-    public void updateToken(String userId, String authCode, String accessToken, String refreshToken) throws Exception {
+    public void updateToken(String userId, String authCode,
+                            String accessToken,  LocalDateTime accessTokenExpiresDtm,
+                            String refreshToken, LocalDateTime refreshTokenExpiresDtm) throws Exception {
         // 인증 기록을 가져온다.
         AuthLog authLog = this.find(userId, authCode);
 
         // Log에 토큰 정보를 등록한다.
         // 조건이 맞지 않아 등록에 실패하면 예외를 발생한다.
-        authLog.saveTokenData(accessToken, refreshToken);
+        authLog.saveTokenData(accessToken, accessTokenExpiresDtm,
+                              refreshToken, refreshTokenExpiresDtm);
     }
 
     @Override

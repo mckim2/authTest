@@ -29,7 +29,7 @@ public interface AuthService {
      * @throws AccessDeniedException
      * @throws UnsupportedResponseType
      */
-    public AuthCode auth(RequestAuthCodeDto reqDto) throws RuntimeException;
+    public AuthCode auth(RequestAuthCodeDto reqDto) throws Exception;
 
     /**
      *

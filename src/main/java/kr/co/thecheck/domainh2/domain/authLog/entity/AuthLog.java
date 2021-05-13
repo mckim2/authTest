@@ -5,6 +5,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 @Entity
 @NoArgsConstructor
@@ -18,13 +19,15 @@ public class AuthLog {
 
     private LocalDateTime authCodeCreateDtm; // 인증코드 발급 시점
 
-    private String accessToken;                // 엑세스토큰
-    private LocalDateTime accessTokenCreateDtm; // 엑세스토큰 발급 시점
+    private String accessToken;                  // 엑세스토큰
+    private LocalDateTime accessTokenCreateDtm;  // 엑세스토큰 발급 시점
+    private LocalDateTime accessTokenExpiresDtm; // 엑세스토큰 종료 시점
 
     private String refreshToken;
-    private LocalDateTime refreshTokenCreateDtm; // 리프래쉬토큰 발급 시점
+    private LocalDateTime refreshTokenCreateDtm;  // 리프래쉬토큰 발급 시점
+    private LocalDateTime refreshTokenExpiredDtm; // 리프래시토큰 종료 시점
 
-    private Boolean logout;
+    private LocalDateTime logoutDtm; // 로그아웃 시점
 
     //=======================Business Logic==========================//
     public static AuthLog createLog(String userId, String authCode) throws Exception{
@@ -33,20 +36,23 @@ public class AuthLog {
             throw new Exception("UserId 또는 AuthCode가 필요합니다.");
         }
 
+        // 복합키 설정
         AuthLogId authLogId = new AuthLogId();
         authLogId.setUserId(userId);
         authLogId.setAuthCode(authCode);
 
+        // 엔티티 생성
+        LocalDateTime now = LocalDateTime.now();
         AuthLog authLog = new AuthLog();
         authLog.setAuthLogId(authLogId);
-        authLog.setAuthCodeCreateDtm(LocalDateTime.now());
-        authLog.setLogout(false);
+        authLog.setAuthCodeCreateDtm(now);
 
         return authLog;
     }
 
     // 토큰 정보 저장
-    public void saveTokenData(String accessToken, String refreshToken) throws Exception{
+    public void saveTokenData(String accessToken, LocalDateTime accessTokenExpiresDtm,
+                              String refreshToken, LocalDateTime refreshTokenExpiredDtm ) throws Exception{
         if(ObjectUtils.isEmpty(authLogId) || ObjectUtils.isEmpty(authLogId.getUserId()) || ObjectUtils.isEmpty(authLogId.getAuthCode())){
             throw new Exception("토큰을 생성할 수 있는 정보가 없습니다.");
         }
@@ -55,7 +61,7 @@ public class AuthLog {
             throw new Exception("accessToken 이나 refreshToken이 존재하지 않습니다.");
         }
 
-        if(logout){
+        if(!ObjectUtils.isEmpty(logoutDtm)){
             throw new Exception("로그아웃된 사용자라 토큰 생성을 할 수 없습니다.");
         }
 
@@ -65,14 +71,37 @@ public class AuthLog {
 
         this.setAccessToken(accessToken);
         this.setAccessTokenCreateDtm(LocalDateTime.now());
+        this.setAccessTokenExpiresDtm(accessTokenExpiresDtm);
         this.setRefreshToken(refreshToken);
         this.setRefreshTokenCreateDtm(LocalDateTime.now());
+        this.setRefreshTokenExpiredDtm(refreshTokenExpiredDtm);
     }
 
+    /**
+     * 로그인 여부 확인
+     * @return
+     */
+    public boolean isLogin(){
+        // 토큰이 발급되지 않았다.
+        if(accessToken == null && refreshToken == null)
+            return false;
+        // 로그아웃 상태다
+        if(logoutDtm != null)
+            return false;
+        // 리프레시 토큰의 만료일이 지났다.
+        if(refreshTokenExpiredDtm.isBefore(LocalDateTime.now())){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 로그아웃 처리
+     */
     public void logout() throws Exception{
-        if(logout){
+        if(!ObjectUtils.isEmpty(logoutDtm)){
             throw new Exception("이미 로그아웃되어있습니다.");
         }
-        logout = true;
+        logoutDtm = LocalDateTime.now();
     }
 }

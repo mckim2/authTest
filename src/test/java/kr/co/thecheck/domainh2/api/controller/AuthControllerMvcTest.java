@@ -36,7 +36,7 @@ class AuthControllerMvcTest {
         dto.setUsername("test");
         dto.setPassword("1234");
 
-        AuthService.AuthCode authCode = new AuthService.AuthCode();
+        AuthService.AuthCode authCode = new AuthService.AuthCode("");
         authCode.setAuthCode("12345");
 
         // When
